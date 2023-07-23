@@ -42,6 +42,8 @@ class CreateUserAPIView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 new_user = User.objects.get(user_email = request.data["user_email"])
+                new_user.set_password(request.data["user_password"])
+                new_user.save()
                 ShoppingCart.objects.create(cart_user = new_user)
                 return Response({'message': 'User created succesfully'}, status=status.HTTP_201_CREATED)
             return Response({'error': 'Something wrong'}, status=status.HTTP_400_BAD_REQUEST)
