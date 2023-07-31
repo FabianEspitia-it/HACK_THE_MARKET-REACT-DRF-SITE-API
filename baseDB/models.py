@@ -6,7 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 
 
 class AuthGroup(models.Model):
@@ -91,6 +91,7 @@ class Brand(models.Model):
 
 
 class CartProduct(models.Model):
+    id = models.IntegerField(primary_key= True)
     id_cart = models.ForeignKey('ShoppingCart', models.DO_NOTHING, db_column='ID_cart', blank=True, null=True)  # Field name made lowercase.
     id_product = models.ForeignKey('Product', models.DO_NOTHING, db_column='ID_product', blank=True, null=True)  # Field name made lowercase.
 
@@ -130,6 +131,9 @@ class DeliveryMethod(models.Model):
     class Meta:
         managed = False
         db_table = 'delivery_method'
+
+    def __str__(self) -> str:
+        return self.delivery_method_name
 
 
 class DjangoAdminLog(models.Model):
@@ -273,6 +277,9 @@ class User(models.Model):
 
     def set_password(self, raw_password):
         self.user_password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.user_password)
 
     class Meta:
         managed = False
