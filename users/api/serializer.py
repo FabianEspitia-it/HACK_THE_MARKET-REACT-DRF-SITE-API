@@ -1,9 +1,13 @@
+#DJANGO
+from django import datetime
+
+
 #DJANGO REST FRAMEWORK
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-
-from baseDB.models import User
+#DB
+from baseDB.models import User, ShoppingCart
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,9 +19,6 @@ class LoginUserSerializer(serializers.Serializer):
     user_email = serializers.CharField(max_length = 100)
     user_password = serializers.CharField(max_length = 200)
 
-    
-
-    
 
 class RegisterUserSerializer(serializers.Serializer):
     user_name = serializers.CharField(max_length = 100)
@@ -40,9 +41,14 @@ class RegisterUserSerializer(serializers.Serializer):
         return data
     
     def create(self, data):
-
         data.pop("user_password_confirmation")
+        data["user_password"] = Users.set_password(data["user_password"])
         user= User.objects.create(**data)
+        user.is_active= 1
+        user.created_at = datetime.now()
+        user.updated_at = datetime.now()
+        user.save()
+        ShoppingCart.objects.create(cart_user = user)
         return user
         
     
