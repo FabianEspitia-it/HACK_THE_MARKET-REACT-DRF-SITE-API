@@ -23,7 +23,7 @@ class ProductsCategoryApiView(APIView):
         if products:
             serializer = ProductModelSerializaer(products, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(error_message, status=status.HTTP_404_NOT_FOUND)
+        return Response(self.error_message, status=status.HTTP_404_NOT_FOUND)
 
 
 class OneProductCategoryApiView(APIView):
@@ -34,4 +34,4 @@ class OneProductCategoryApiView(APIView):
         if product:
             serializer = ProductModelSerializaer(product)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(error_message, status=status.HTTP_404_NOT_FOUND)
+        return Response(self.error_message, status=status.HTTP_404_NOT_FOUND)

@@ -13,15 +13,16 @@ from baseDB.models import ShoppingCart, CartProduct, Product, DeliveryMethod
 
 class ShoppingCartAPIView(APIView):
     error_message = {'error': 'cart does not exists'}
-    shopping_cart = ShoppingCart.objects.filter(cart_id=pk).first()
-
     def get(self, request, pk=None):
+        shopping_cart = ShoppingCart.objects.filter(cart_id=pk).first()
+
         if shopping_cart:
             serializer_shopping_cart = ShoppingCartSerializer(shopping_cart)
             return Response(serializer_shopping_cart.data, status=status.HTTP_200_OK)
-        return Response(error_message, status=status.HTTP_404_NOT_FOUND)
+        return Response(self.error_message, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, pk=None):
+        shopping_cart = ShoppingCart.objects.filter(cart_id=pk).first()
         serializer = CartProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

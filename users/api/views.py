@@ -10,18 +10,19 @@ from .serializer import UserSerializer, RegisterUserSerializer, LoginUserSeriali
 
 class UserAPIView(APIView):
 
-    user = User.objects.filter(user_id=pk).first()
 
     def get(self, request, pk=None):
+        user = User.objects.filter(user_id=pk).first()
         error_message = {"error": "User does not exists"}
         if user:
             if user.is_active == 1:
                 serializer = UserSerializer(user)
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(error_message, status=status.HTTP_404_NOT_FOUND)
-        return Response(error_message, status=status.HTTP_404_NOT_FOUND)
+            return Response(self.error_message, status=status.HTTP_404_NOT_FOUND)
+        return Response(self.error_message, status=status.HTTP_404_NOT_FOUND)
 
     def patch(self, request, pk=None):
+        user = User.objects.filter(user_id=pk).first()
         error_message = {'error': 'Something wrong'}
         succesfully_message = {
             'message': 'The information was updated succesfully'}
@@ -31,17 +32,18 @@ class UserAPIView(APIView):
             user.updated_at = datetime.now()
             user.set_password(request.data["user_password"])
             user.save()
-            return Response(succesfully_message, status=status.HTTP_200_OK)
-        return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+            return Response(self.succesfully_message, status=status.HTTP_200_OK)
+        return Response(self.error_message, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
+        user = User.objects.filter(user_id=pk).first()
         error_message = {'error': 'User does not exits'}
         succesfully_message = {'message': 'User deleted succesfully'}
         if user:
             user.is_active = 0
             user.save()
-            return Response(succesfully_message, status=status.HTTP_200_OK)
-        return Response(error_message, status=status.HTTP_404_NOT_FOUND)
+            return Response(self.succesfully_message, status=status.HTTP_200_OK)
+        return Response(self.error_message, status=status.HTTP_404_NOT_FOUND)
 
 
 class RegisterUserAPIView(APIView):
@@ -51,7 +53,7 @@ class RegisterUserAPIView(APIView):
         serializer = RegisterUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(message, status=status.HTTP_201_CREATED)
+        return Response(self.message, status=status.HTTP_201_CREATED)
 
 
 class LoginUserAPIview(APIView):
@@ -65,5 +67,5 @@ class LoginUserAPIview(APIView):
                 serializer = LoginUserSerializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
                 return Response({"message": f"Hello, {user.user_name}"}, status=status.HTTP_202_ACCEPTED)
-            return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
-        return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+            return Response(self.error_message, status=status.HTTP_400_BAD_REQUEST)
+        return Response(self.error_message, status=status.HTTP_400_BAD_REQUEST)
